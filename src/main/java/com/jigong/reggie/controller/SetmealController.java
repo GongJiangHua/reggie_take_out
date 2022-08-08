@@ -42,6 +42,27 @@ public class SetmealController {
     }
 
     /**
+     * 回显套餐信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<SetmealDto> get(@PathVariable Long id){
+        SetmealDto setmealDto = setmealServiceImpl.getWithDish(id);
+        return Result.success(setmealDto);
+    }
+
+    /**
+     * 更新套餐信息
+     * @param setmealDto
+     * @return
+     */
+    @PutMapping
+    public Result<String> update(@RequestBody SetmealDto setmealDto){
+        setmealServiceImpl.updateWithDish(setmealDto);
+        return Result.success("套餐更新成功");
+    }
+    /**
      * 删除套餐
      * @param ids
      * @return

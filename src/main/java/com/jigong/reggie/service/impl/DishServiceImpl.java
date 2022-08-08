@@ -146,7 +146,19 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         this.removeByIds(ids);
     }
 
-    public List<Dish> list(Dish dish){
+//    public List<Dish> list(Dish dish){
+//        //添加查询构造器
+//        LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper();
+//        //添加查询条件
+//        queryWrapper.eq(dish.getCategoryId() != null,Dish::getCategoryId,dish.getCategoryId());
+//        queryWrapper.eq(Dish::getStatus,1);
+//        //添加排序条件
+//        queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+//        List<Dish> dishList = this.list(queryWrapper);
+//        return dishList;
+//    }
+
+    public List<DishDto> list(Dish dish){
         //添加查询构造器
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper();
         //添加查询条件
@@ -155,7 +167,19 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         //添加排序条件
         queryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
         List<Dish> dishList = this.list(queryWrapper);
-        return dishList;
+        List<DishDto> dishDtos = dishList.stream().map(item -> {
+            DishDto dto = new DishDto();
+            BeanUtils.copyProperties(item,dto);
+            //添加查询构造器
+            LambdaQueryWrapper<DishFlavor> queryWrapper1 = new LambdaQueryWrapper<>();
+            //添加查询条件
+            queryWrapper1.eq(DishFlavor::getDishId,item.getId());
+            //返回该菜品对应的口味表，并对dto赋值
+            List<DishFlavor> dishFlavors = dishFlavorService.list(queryWrapper1);
+            dto.setFlavors(dishFlavors);
+            return dto;
+        }).collect(Collectors.toList());
+        return dishDtos;
     }
 
     public void updateStatus(int status,List<Long> ids){

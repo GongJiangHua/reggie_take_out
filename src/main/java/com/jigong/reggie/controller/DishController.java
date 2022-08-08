@@ -70,8 +70,8 @@ public class DishController {
     }
 
     @GetMapping("/list")
-    public Result<List<Dish>> list(Dish dish){
-        List<Dish> list = dishServiceImpl.list(dish);
+    public Result<List<DishDto>> list(Dish dish){
+        List<DishDto> list = dishServiceImpl.list(dish);
         return Result.success(list);
     }
 
