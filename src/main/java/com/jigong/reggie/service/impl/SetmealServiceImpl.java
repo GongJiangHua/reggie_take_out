@@ -3,6 +3,7 @@ package com.jigong.reggie.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jigong.reggie.commom.MyCustomException;
 import com.jigong.reggie.dto.SetmealDto;
 import com.jigong.reggie.entity.Category;
 import com.jigong.reggie.entity.Setmeal;
@@ -53,12 +54,12 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         //SELECT COUNT(*) FROM setmeal s2 where id =  '1415580119015145474' AND status = '1';
         //查询套餐状态，确定是否可以删除
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Setmeal::getId,ids);
+        queryWrapper.in(Setmeal::getId,ids);
         queryWrapper.eq(Setmeal::getStatus,1);
         int count = this.count(queryWrapper);
         //如果不能删除，则抛出一个业务异常
         if (count > 0){
-            throw new ClassCastException("套餐正在售卖中，不能删除");
+            throw new MyCustomException("套餐正在售卖中，不能删除");
         }
         //如果可以删除，则先删除套餐表中的数据
         this.removeByIds(ids);
@@ -68,6 +69,11 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         setmealDishService.remove(queryWrapper1);
     }
 
+    /**
+     * 回显套餐信息
+     * @param id
+     * @return
+     */
     @Override
     public SetmealDto getWithDish(Long id) {
         //new一个SetmealDto，用于存储返回的信息
@@ -90,6 +96,11 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         return setmealDto;
     }
 
+    /**
+     * 更新套餐信息
+     * @param setmealDto
+     * @return
+     */
     @Override
     public void updateWithDish(SetmealDto setmealDto) {
         this.updateById(setmealDto);
@@ -145,6 +156,12 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         return dtoPage.setRecords(list);
     }
 
+    /**
+     * 修改套餐状态，停售或者起售
+     * @param ids
+     * @param status
+     * @return
+     */
     public void updateStatus(int status,List<Long> ids){
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(ids != null,Setmeal::getId,ids);
@@ -153,6 +170,21 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
             setmeal.setStatus(status);
             this.updateById(setmeal);
         });
-
     }
+
+    /**
+     * 起售状态的套餐列表，用于C端显示给客户
+     * @param setmeal
+     * @return
+     */
+    public List<Setmeal> list(Setmeal setmeal){
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null,Setmeal::getCategoryId,setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
+
+        List<Setmeal> setmealList = this.list(queryWrapper);
+
+        return setmealList;
+    }
+
 }

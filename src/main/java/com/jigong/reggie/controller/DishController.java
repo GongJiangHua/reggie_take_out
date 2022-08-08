@@ -21,6 +21,10 @@ public class DishController {
     @Autowired
     public DishServiceImpl dishServiceImpl;
 
+    /**
+     * 新增菜品，同时保存对应的口味数据
+     * @param dishDto
+     */
     @PostMapping
     public Result<String> save(@RequestBody DishDto dishDto) {
         log.info("当前的dishDto:", dishDto.toString());
@@ -63,18 +67,34 @@ public class DishController {
         return Result.success("更新菜品成功");
     }
 
+    /**
+     * 删除菜品，单挑或者批量删除
+     * @param ids
+     * @return
+     */
     @DeleteMapping
     public Result<String> remove(@RequestParam("ids") List<Long> ids){
         dishServiceImpl.remove(ids);
         return Result.success("删除菜品成功");
     }
 
+    /**
+     * 管理端和C端的菜品栏 列表显示
+     * @param dish
+     * @return
+     */
     @GetMapping("/list")
     public Result<List<DishDto>> list(Dish dish){
         List<DishDto> list = dishServiceImpl.list(dish);
         return Result.success(list);
     }
 
+    /**
+     * 修改菜品状态，停售或者起售
+     * @param status
+     * @param ids
+     * @return
+     */
     @PostMapping("/status/{status}")
     public Result<String> updateStatus(@PathVariable int status,@RequestParam List<Long> ids){
         dishServiceImpl.updateStatus(status,ids);

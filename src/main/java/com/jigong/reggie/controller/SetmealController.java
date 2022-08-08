@@ -3,6 +3,7 @@ package com.jigong.reggie.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jigong.reggie.commom.Result;
 import com.jigong.reggie.dto.SetmealDto;
+import com.jigong.reggie.entity.Setmeal;
 import com.jigong.reggie.service.impl.SetmealServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class SetmealController {
     @PutMapping
     public Result<String> update(@RequestBody SetmealDto setmealDto){
         setmealServiceImpl.updateWithDish(setmealDto);
-        return Result.success("套餐更新成功");
+            return Result.success("套餐更新成功");
     }
     /**
      * 删除套餐
@@ -74,9 +75,26 @@ public class SetmealController {
         return Result.success("删除套餐成功");
     }
 
+    /**
+     * 修改套餐状态，停售或者起售
+     * @param ids
+     * @param status
+     * @return
+     */
     @PostMapping("/status/{status}")
     public Result<String> updateStatus(@RequestParam List<Long> ids,@PathVariable int status){
         setmealServiceImpl.updateStatus(status,ids);
         return Result.success("状态修改成功");
+    }
+
+    /**
+     * 起售状态的套餐列表，用于C端显示给客户
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public Result<List<Setmeal>> list(Setmeal setmeal){
+        List<Setmeal> list = setmealServiceImpl.list(setmeal);
+        return Result.success(list);
     }
 }
