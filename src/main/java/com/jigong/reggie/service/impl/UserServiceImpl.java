@@ -54,7 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             mailSender.send(mailMessage);
 
             //  将随机生成的验证码保存到session中
-//            session.setAttribute(phone,code);
+            //session.setAttribute(phone,code);
             redisTemplate.opsForValue().set("gjh", "11111");
             // 验证码由保存到session 优化为 缓存到Redis中，并且设置验证码的有效时间为 5分钟
             redisTemplate.opsForValue().set(phone, code, 5, TimeUnit.MINUTES);
@@ -85,6 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setPhone(phone);
             this.save(user);
         }
+        redisTemplate.delete(phone);
         return user;
     }
 }

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jigong.reggie.commom.MyCustomException;
-import com.jigong.reggie.commom.Result;
 import com.jigong.reggie.dto.DishDto;
 import com.jigong.reggie.entity.Category;
 import com.jigong.reggie.entity.Dish;
@@ -15,10 +14,12 @@ import com.jigong.reggie.service.DishFlavorService;
 import com.jigong.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +30,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     @Autowired
     public CategoryService categoryService;
 
+    @Autowired
+    public RedisTemplate redisTemplate;
     /**
      * 新增菜品，同时保存对应的口味数据
      *
@@ -36,6 +39,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      */
     @Transactional
     public void saveWithFlavor(DishDto dishDto) {
+        //清理菜品的缓存数据
+        String key = "dish_"+dishDto.getCategoryId()+"_1";
+        redisTemplate.delete(key);
         //将菜品信息保存到dish表
         this.save(dishDto);
         //口味相关的信息保存到flavor表
@@ -80,6 +86,9 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     @Override
     @Transactional
     public void updateWithFlavor(DishDto dishDto) {
+        //清理菜品的缓存数据
+        String key = "dish_"+dishDto.getCategoryId()+"_1";
+        redisTemplate.delete(key);
         //1、更新dish表基本信息
         this.updateById(dishDto);
         //2、删除当前菜品对应的口味信息
@@ -182,6 +191,16 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
      * @return
      */
     public List<DishDto> list(Dish dish) {
+        List<DishDto> dishDto = null;
+
+        String key = "dish_"+dish.getCategoryId()+"_"+dish.getStatus();
+        //先从redis获取缓存数据
+        dishDto = (List<DishDto>)redisTemplate.opsForValue().get(key);
+        //如果缓存里面有数据，则直接返回缓存
+        if (dishDto != null){
+            return dishDto;
+        }
+        //否者就进行数据库操作
         //添加查询构造器
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper();
         //添加查询条件
@@ -202,6 +221,8 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             dto.setFlavors(dishFlavors);
             return dto;
         }).collect(Collectors.toList());
+        //如果不存在，需要查询数据库，将查询的菜品数据缓存到数据库
+        redisTemplate.opsForValue().set(key,dishDtos,60, TimeUnit.MINUTES);
         return dishDtos;
     }
 
