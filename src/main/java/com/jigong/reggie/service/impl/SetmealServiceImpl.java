@@ -14,6 +14,7 @@ import com.jigong.reggie.service.SetmealDishService;
 import com.jigong.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,7 +184,6 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         queryWrapper.eq(setmeal.getStatus() != null,Setmeal::getStatus,setmeal.getStatus());
 
         List<Setmeal> setmealList = this.list(queryWrapper);
-
         return setmealList;
     }
 
