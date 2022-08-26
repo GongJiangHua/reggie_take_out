@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jigong.reggie.commom.BaseContext;
 import com.jigong.reggie.commom.MyCustomException;
+import com.jigong.reggie.dto.OrdersDto;
 import com.jigong.reggie.entity.*;
 import com.jigong.reggie.mapper.OrderMapper;
 import com.jigong.reggie.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +83,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         orders.setAmount(new BigDecimal(amount.get()));//总金额，需要 遍历购物车，计算相关金额来得到
         orders.setUserId(userId);
         orders.setNumber(String.valueOf(orderId));
-        orders.setUserName(user.getName());
         orders.setConsignee(addressBook.getConsignee());
         orders.setPhone(addressBook.getPhone());
         orders.setAddress((addressBook.getProvinceName() == null ? "" : addressBook.getProvinceName())
@@ -96,19 +97,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         shoppingCartService.remove(queryWrapper);
     }
 
-    public Page<OrderDetail> page(int page,int pageSize){
-        //查询当前用户的id
-        Long currentId = BaseContext.getCurrentId();
-        LambdaQueryWrapper<Orders> query = new LambdaQueryWrapper();
-        query.eq(Orders::getUserId,currentId);
-        Orders one = orderService.getOne(query);
+    public Page<OrdersDto> page(int page,int pageSize){
         //添加分页构造器
-        Page<OrderDetail> pageInfo = new Page<>(page,pageSize);
-        //添加一个查询构造器
-        LambdaQueryWrapper<OrderDetail> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(OrderDetail::getOrderId,one.getNumber());
-        //添加分页条件
-        Page<OrderDetail> detailPage = orderDetailService.page(pageInfo, queryWrapper);
-        return detailPage;
+        Page<Orders> pageInfo = new Page<>(page,pageSize);
+        Page<OrdersDto> ordersDtoPage = new Page<>();
+        //添加查询构造器
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+        //添加过滤条件
+        queryWrapper.eq(Orders::getUserId,BaseContext.getCurrentId());
+        //添加排序条件
+        queryWrapper.orderByDesc(Orders::getCheckoutTime);
+        //执行查询
+        this.page(pageInfo, queryWrapper);
+
+        BeanUtils.copyProperties(pageInfo,ordersDtoPage,"records");
+
+        List<Orders> records = pageInfo.getRecords();
+        List<OrdersDto> list = records.stream().map(item ->{
+            OrdersDto ordersDto = new OrdersDto();
+            BeanUtils.copyProperties(item,ordersDto);
+            Long orderId = item.getId();
+
+            //添加查询构造器
+            LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<>();
+            //添加查询条件
+            wrapper.eq(OrderDetail::getOrderId,orderId);
+            //执行查询
+            List<OrderDetail> orderDetailList = orderDetailService.list(wrapper);
+            //对ordersDto进行赋值
+            ordersDto.setOrderDetails(orderDetailList);
+            ordersDto.setSumNum(orderDetailList.size());
+
+            return ordersDto;
+        }).collect(Collectors.toList());
+        ordersDtoPage.setRecords(list);
+
+        return ordersDtoPage;
     }
 }

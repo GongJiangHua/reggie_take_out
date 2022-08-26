@@ -53,7 +53,11 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         }
         return cartServiceOne;
     }
-
+    /**
+     * 加购菜品或套餐数量-1
+     * @param shoppingCart
+     * @return
+     */
     public void subShoppingCart(ShoppingCart shoppingCart) {
         Long currentId = BaseContext.getCurrentId();
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
@@ -72,7 +76,10 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         }
     }
 
-
+    /**
+     * 清空购物车
+     * @return
+     */
     public void clean(){
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());

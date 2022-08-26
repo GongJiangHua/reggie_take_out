@@ -14,7 +14,6 @@ import com.jigong.reggie.service.SetmealDishService;
 import com.jigong.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,7 +129,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     public Page<SetmealDto> page(int page, int pageSize, String name) {
         Page<Setmeal> setmealPage = new Page<>(page, pageSize);
         Page<SetmealDto> dtoPage = new Page<>();
-        //添加查询构造器
+
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         //添加查询条件
         queryWrapper.eq(name != null, Setmeal::getName, name);

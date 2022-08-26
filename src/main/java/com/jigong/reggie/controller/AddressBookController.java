@@ -1,12 +1,9 @@
 package com.jigong.reggie.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.jigong.reggie.commom.BaseContext;
 import com.jigong.reggie.commom.Result;
 import com.jigong.reggie.entity.AddressBook;
-import com.jigong.reggie.service.AddressBookService;
 import com.jigong.reggie.service.impl.AddressBookServiceImpl;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/addressBook")
+@Api("地址")
 public class AddressBookController {
     @Autowired
     private AddressBookServiceImpl addressBookServiceImpl;

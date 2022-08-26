@@ -2,6 +2,7 @@ package com.jigong.reggie.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jigong.reggie.commom.Result;
+import com.jigong.reggie.dto.OrdersDto;
 import com.jigong.reggie.entity.OrderDetail;
 import com.jigong.reggie.entity.Orders;
 import com.jigong.reggie.service.impl.OrderServiceImpl;
@@ -23,8 +24,8 @@ public class OrderController {
 }
 
 @GetMapping("/userPage")
-    public Result<Page<OrderDetail>> page(int page, int pageSize){
-    Page<OrderDetail> detailPage = orderServiceImpl.page(page, pageSize);
+    public Result<Page> page(int page, int pageSize){
+    Page<OrdersDto> detailPage = orderServiceImpl.page(page, pageSize);
     return Result.success(detailPage);
     }
 }

@@ -40,4 +40,16 @@ public class UserController {
         request.getSession().setAttribute("user",user.getId());
         return Result.success(user);
     }
+
+    /**
+     * 退出登录
+     * @param request
+     * @return
+     */
+    @PostMapping("loginout")
+    public Result<String> logOut(HttpServletRequest request){
+        //清除当前登录用户的sessionId
+        request.getSession().removeAttribute("user");
+        return Result.success("退出成功");
+    }
 }

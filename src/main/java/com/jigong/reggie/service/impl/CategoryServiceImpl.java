@@ -33,7 +33,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper();
         //添加查询条件，sort排序
-        queryWrapper.orderByAsc(Category::getSort);
+            queryWrapper.orderByAsc(Category::getSort);
 
         return this.page(pageInfo, queryWrapper);
     }
