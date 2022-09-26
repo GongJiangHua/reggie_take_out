@@ -1,12 +1,16 @@
 package com.jigong.reggie.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jigong.reggie.commom.BaseContext;
 import com.jigong.reggie.commom.MyCustomException;
 import com.jigong.reggie.dto.OrdersDto;
+import com.jigong.reggie.dto.QueryDto;
 import com.jigong.reggie.entity.*;
 import com.jigong.reggie.mapper.OrderMapper;
 import com.jigong.reggie.service.*;
@@ -19,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,25 +38,27 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     public OrderDetailService orderDetailService;
     @Autowired
     public OrderService orderService;
+
     /**
      * 用户下单
+     *
      * @param orders
      */
     @Transactional
-    public void submit(Orders orders){
+    public void submit(Orders orders) {
         //获取当前用户的id
         Long userId = BaseContext.getCurrentId();
         //查询当前用户的购物车数据
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,userId);
+        queryWrapper.eq(ShoppingCart::getUserId, userId);
         List<ShoppingCart> cartList = shoppingCartService.list(queryWrapper);
-        if (cartList == null || cartList.size() == 0){
+        if (cartList == null || cartList.size() == 0) {
             throw new MyCustomException("购物车为空，不能下单");
         }
 
         User user = userService.getById(userId);
         AddressBook addressBook = addressBookService.getById(orders.getAddressBookId());
-        if (addressBook == null){
+        if (addressBook == null) {
             throw new MyCustomException("用户地址信息有误，不能下单");
         }
         long orderId = IdWorker.getId();  // 订单号
@@ -97,31 +104,31 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         shoppingCartService.remove(queryWrapper);
     }
 
-    public Page<OrdersDto> page(int page,int pageSize){
+    public Page<OrdersDto> page(int page, int pageSize) {
         //添加分页构造器
-        Page<Orders> pageInfo = new Page<>(page,pageSize);
+        Page<Orders> pageInfo = new Page<>(page, pageSize);
         Page<OrdersDto> ordersDtoPage = new Page<>();
         //添加查询构造器
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         //添加过滤条件
-        queryWrapper.eq(Orders::getUserId,BaseContext.getCurrentId());
+        queryWrapper.eq(Orders::getUserId, BaseContext.getCurrentId());
         //添加排序条件
         queryWrapper.orderByDesc(Orders::getCheckoutTime);
         //执行查询
         this.page(pageInfo, queryWrapper);
 
-        BeanUtils.copyProperties(pageInfo,ordersDtoPage,"records");
+        BeanUtils.copyProperties(pageInfo, ordersDtoPage, "records");
 
         List<Orders> records = pageInfo.getRecords();
-        List<OrdersDto> list = records.stream().map(item ->{
+        List<OrdersDto> list = records.stream().map(item -> {
             OrdersDto ordersDto = new OrdersDto();
-            BeanUtils.copyProperties(item,ordersDto);
+            BeanUtils.copyProperties(item, ordersDto);
             Long orderId = item.getId();
 
             //添加查询构造器
             LambdaQueryWrapper<OrderDetail> wrapper = new LambdaQueryWrapper<>();
             //添加查询条件
-            wrapper.eq(OrderDetail::getOrderId,orderId);
+            wrapper.eq(OrderDetail::getOrderId, orderId);
             //执行查询
             List<OrderDetail> orderDetailList = orderDetailService.list(wrapper);
             //对ordersDto进行赋值
@@ -133,5 +140,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         ordersDtoPage.setRecords(list);
 
         return ordersDtoPage;
+    }
+
+    public Page<Orders> list(QueryDto queryDto) {
+        //添加分页构造器
+        Page<Orders> ordersPage = new Page<>(queryDto.getPage(), queryDto.getPageSize());
+        //添加查询构造器
+        QueryWrapper<Orders> wrapper = new QueryWrapper<>();
+
+        String num = queryDto.getNumber();
+        String begin = queryDto.getBeginTime();
+        String end = queryDto.getEndTime();
+        //添加查询条件
+        wrapper
+        .like(StringUtils.isNotBlank(num), "number", num)
+        //添加构造条件
+        .ge(null != begin,"order_time",begin)
+        .le(null != end,"order_time",end)
+        //添加排序条件
+        .orderByDesc("order_time");
+        Page<Orders> page = this.page(ordersPage, wrapper);
+        return page;
     }
 }

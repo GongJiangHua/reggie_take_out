@@ -45,7 +45,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
         //将菜品信息保存到dish表
         this.save(dishDto);
         //口味相关的信息保存到flavor表
-        Long dishId = dishDto.getId();//菜品Id
+        Long dishId = dishDto.getId();//A
         //菜品口味
         List<DishFlavor> flavors = dishDto.getFlavors();
         flavors = flavors.stream().map((item) -> {
@@ -80,7 +80,6 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     /**
      * 修改菜品
-     *
      * @param dishDto
      */
     @Override
@@ -142,7 +141,6 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
             BeanUtils.copyProperties(dish, dishDto);
             return dishDto;
         }).collect(Collectors.toList());
-
         dishDtoPage.setRecords(dishDtoList);
         return dishDtoPage;
     }

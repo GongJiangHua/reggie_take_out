@@ -52,7 +52,6 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
 
     public List<AddressBook> list(AddressBook addressBook){
         addressBook.setUserId(BaseContext.getCurrentId());
-
         //条件构造器
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(null != addressBook.getUserId(), AddressBook::getUserId, addressBook.getUserId());

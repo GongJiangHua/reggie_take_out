@@ -39,7 +39,6 @@ public class CategoryController {
         Page<Category> pageRes =  categoryServiceImpl.page(page,pageSize);
         return Result.success(pageRes);
     }
-
     @PutMapping
     @ApiOperation("分类更新接口")
     public Result<String> update(@RequestBody Category category){
