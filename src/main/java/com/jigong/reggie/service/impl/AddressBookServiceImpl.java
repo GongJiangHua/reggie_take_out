@@ -17,12 +17,12 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
     @Autowired
     public AddressBookService addressBookService;
 
-    public void saveAddress(AddressBook addressBook){
+    public void saveAddress(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
         addressBookService.save(addressBook);
     }
 
-    public AddressBook get(Long id){
+    public AddressBook get(Long id) {
         AddressBook addressBook = addressBookService.getById(id);
         return addressBook;
 
@@ -40,7 +40,7 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
         addressBookService.updateById(addressBook);
     }
 
-    public AddressBook getDefault(){
+    public AddressBook getDefault() {
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
         queryWrapper.eq(AddressBook::getIsDefault, 1);
@@ -50,7 +50,7 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
         return addressBook;
     }
 
-    public List<AddressBook> list(AddressBook addressBook){
+    public List<AddressBook> list(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
         //条件构造器
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();

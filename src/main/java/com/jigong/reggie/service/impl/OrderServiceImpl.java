@@ -40,9 +40,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
     public OrderService orderService;
 
     /**
-     * 用户下单
-     *
+     * C端用户提交订单功能
      * @param orders
+     * @return
      */
     @Transactional
     public void submit(Orders orders) {
@@ -104,6 +104,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         shoppingCartService.remove(queryWrapper);
     }
 
+    /**
+     * C端用户个人订单查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
     public Page<OrdersDto> page(int page, int pageSize) {
         //添加分页构造器
         Page<Orders> pageInfo = new Page<>(page, pageSize);
@@ -142,6 +148,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         return ordersDtoPage;
     }
 
+    /**
+     * 管理端的订单明细查询
+     * @param queryDto
+     * @return
+     */
     public Page<Orders> list(QueryDto queryDto) {
         //添加分页构造器
         Page<Orders> ordersPage = new Page<>(queryDto.getPage(), queryDto.getPageSize());
@@ -153,13 +164,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         String end = queryDto.getEndTime();
         //添加查询条件
         wrapper
-        .like(StringUtils.isNotBlank(num), "number", num)
-        //添加构造条件
-        .ge(null != begin,"order_time",begin)
-        .le(null != end,"order_time",end)
-        //添加排序条件
-        .orderByDesc("order_time");
+                .like(StringUtils.isNotBlank(num), "number", num)
+                //添加构造条件
+                .ge(null != begin, "order_time", begin)
+                .le(null != end, "order_time", end)
+                //添加排序条件
+                .orderByDesc("order_time");
         Page<Orders> page = this.page(ordersPage, wrapper);
         return page;
+    }
+
+    /**
+     * 管理端改变订单状态功能
+     * @param orders
+     * @return
+     */
+    public void modStatus(Orders orders) {
+        this.updateById(orders);
     }
 }
