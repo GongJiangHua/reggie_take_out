@@ -73,7 +73,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         wrapper.orderByDesc(Employee::getUpdateTime);
 
         this.page(pageInfo,wrapper);
-
         return pageInfo;
     }
 

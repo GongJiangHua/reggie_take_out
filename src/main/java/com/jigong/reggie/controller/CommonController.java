@@ -22,6 +22,12 @@ import java.util.UUID;
 public class CommonController {
     @Value("${upload.filePath}")
     private String basePath;
+
+    /**
+     * 文件上传至页面，显示
+     * @param file
+     * @return
+     */
     @PostMapping("/upload")
     public Result<String> upload(MultipartFile file){
         //file是临时文件，需要转存到指定位置，否则本次请求完成后，文件临时文件将被删除
@@ -45,6 +51,11 @@ public class CommonController {
         return Result.success(fileName);
     }
 
+    /**
+     * 文件下载，方便于能从本地读取图片回显至页面
+     * @param name
+     * @param response
+     */
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response){
         //输入流，通过输入流读取文件内容

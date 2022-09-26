@@ -1,6 +1,5 @@
 package com.jigong.reggie.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.interfaces.Func;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -158,7 +157,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
         Page<Orders> ordersPage = new Page<>(queryDto.getPage(), queryDto.getPageSize());
         //添加查询构造器
         QueryWrapper<Orders> wrapper = new QueryWrapper<>();
-
         String num = queryDto.getNumber();
         String begin = queryDto.getBeginTime();
         String end = queryDto.getEndTime();

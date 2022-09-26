@@ -50,6 +50,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         converters.add(0,messageConverter);
     }
 
+    /**
+     * 设置Swagger
+     * @return
+     */
     @Bean
     public Docket createRestApi() {
 // 文档类型

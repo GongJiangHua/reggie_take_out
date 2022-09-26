@@ -5,7 +5,6 @@ import com.jigong.reggie.commom.Result;
 import com.jigong.reggie.entity.Category;
 import com.jigong.reggie.service.impl.CategoryServiceImpl;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +32,24 @@ public class CategoryController {
         return Result.success("新增分类成功");
     }
 
+    /**
+     * 对分类进行分页
+     * @param page
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/page")
     @ApiOperation("分类分页接口")
     public Result<Page> page(int page,int pageSize){
         Page<Category> pageRes =  categoryServiceImpl.page(page,pageSize);
         return Result.success(pageRes);
     }
+
+    /**
+     * 更新分类信息
+     * @param category
+     * @return
+     */
     @PutMapping
     @ApiOperation("分类更新接口")
     public Result<String> update(@RequestBody Category category){
@@ -46,7 +57,11 @@ public class CategoryController {
         return Result.success("菜品更新失败");
     }
 
-
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
     @DeleteMapping
     @ApiOperation("删除分类接口")
     public Result<String> remove(Long id){
@@ -55,6 +70,11 @@ public class CategoryController {
         return Result.success("分类删除成功");
     }
 
+    /**
+     * 分类下拉列表显示
+     * @param category
+     * @return
+     */
     @GetMapping("/list")
     @ApiOperation("分类列表显示")
     public Result<List<Category>> list(Category category){

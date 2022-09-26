@@ -92,7 +92,6 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
         List<SetmealDish> dishes = setmealDishService.list(queryWrapper);
         setmealDto.setSetmealDishes(dishes);
 
-
         return setmealDto;
     }
 

@@ -14,6 +14,10 @@ import java.util.List;
 @Service
 public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, ShoppingCart> implements ShoppingCartService {
 
+    /**
+     * 查看购物车
+     * @return
+     */
     public List<ShoppingCart> list(){
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
@@ -22,6 +26,11 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         return list;
     }
 
+    /**
+     * 加购菜品或者套餐数量+1
+     * @param shoppingCart
+     * @return
+     */
     public ShoppingCart addShoppingCart(ShoppingCart shoppingCart) {
         //设置用户的id，指定当前是那个用户的购物车
         Long userId = BaseContext.getCurrentId();
@@ -53,6 +62,7 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         }
         return cartServiceOne;
     }
+
     /**
      * 加购菜品或套餐数量-1
      * @param shoppingCart

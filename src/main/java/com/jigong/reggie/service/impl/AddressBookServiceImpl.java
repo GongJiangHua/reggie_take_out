@@ -17,17 +17,30 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
     @Autowired
     public AddressBookService addressBookService;
 
+    /**
+     * 新增地址
+     * @param addressBook
+     * @return
+     */
     public void saveAddress(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
         addressBookService.save(addressBook);
     }
-
+    /**
+     * 根据id查询地址
+     * @param id
+     * @return
+     */
     public AddressBook get(Long id) {
         AddressBook addressBook = addressBookService.getById(id);
         return addressBook;
-
     }
 
+    /**
+     * 设置默认地址
+     * @param addressBook
+     * @return
+     */
     public void setDefault(AddressBook addressBook) {
         LambdaUpdateWrapper<AddressBook> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
@@ -40,6 +53,10 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
         addressBookService.updateById(addressBook);
     }
 
+    /**
+     * 查询默认地址
+     * @return
+     */
     public AddressBook getDefault() {
         LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
@@ -50,6 +67,11 @@ public class AddressBookServiceImpl extends ServiceImpl<AddressBookMapper, Addre
         return addressBook;
     }
 
+    /**
+     * 查询指定用户的全部地址
+     * @param addressBook
+     * @return
+     */
     public List<AddressBook> list(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
         //条件构造器

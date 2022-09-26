@@ -21,6 +21,12 @@ public class UserController {
     @Autowired
     public UserServiceImpl userServiceImpl;
 
+    /**
+     * 发送邮件验证码
+     * @param user
+     * @param session
+     * @return
+     */
     @PostMapping("/sendMsg")
     public Result<String> senMsg(@RequestBody User user, HttpSession session){
         Boolean msg = userServiceImpl.sendMsg(user);
@@ -30,6 +36,12 @@ public class UserController {
         return Result.error("验证码发送失败，请重新输入!");
     }
 
+    /**
+     * 用户登录
+     * @param map
+     * @param request
+     * @return
+     */
     @PostMapping("/login")
     public Result<User> login(@RequestBody Map map, HttpServletRequest request){
         User user = userServiceImpl.login(map);

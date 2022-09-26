@@ -20,8 +20,10 @@ import java.util.List;
 public class AddressBookController {
     @Autowired
     private AddressBookServiceImpl addressBookServiceImpl;
+
     /**
-     * 新增
+     * 新增地址
+     * @param addressBook
      * @return
      */
     @PostMapping
@@ -33,6 +35,8 @@ public class AddressBookController {
 
     /**
      * 设置默认地址
+     * @param addressBook
+     * @return
      */
     @PutMapping("default")
     public Result<AddressBook> setDefault(@RequestBody AddressBook addressBook) {
@@ -43,6 +47,8 @@ public class AddressBookController {
 
     /**
      * 根据id查询地址
+     * @param id
+     * @return
      */
     @GetMapping("/{id}")
     public Result get(@PathVariable Long id) {
@@ -56,6 +62,7 @@ public class AddressBookController {
 
     /**
      * 查询默认地址
+     * @return
      */
     @GetMapping("default")
     public Result<AddressBook> getDefault() {
@@ -70,6 +77,8 @@ public class AddressBookController {
 
     /**
      * 查询指定用户的全部地址
+     * @param addressBook
+     * @return
      */
     @GetMapping("/list")
     public Result<List<AddressBook>> list(AddressBook addressBook) {

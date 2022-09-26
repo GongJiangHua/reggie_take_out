@@ -23,10 +23,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Autowired
     public SetmealService setmealService;
 
+    /**
+     * 新增分类
+     * @param category
+     * @return
+     */
     public boolean saveCate(Category category) {
         return this.save(category);
     }
 
+    /**
+     * 对分类进行分页
+     * @param page
+     * @param pageSize
+     * @return
+     */
     public Page<Category> page(int page, int pageSize) {
         //分页构造器
         Page<Category> pageInfo = new Page<>(page, pageSize);
@@ -38,11 +49,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return this.page(pageInfo, queryWrapper);
     }
 
+    /**
+     * 更新分类信息
+     * @param category
+     * @return
+     */
     public void updateCate(Category category) {
         this.updateById(category);
     }
 
-
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
     public void remove(Long id) {
         //查询当前分类是否有关联的菜品，如果已关联，抛出业务异常
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper();
@@ -65,6 +85,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         this.removeById(id);
     }
 
+    /**
+     * 分类下拉列表显示
+     * @param category
+     * @return
+     */
     public List<Category> list(Category category){
         //添加条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();

@@ -31,6 +31,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private StringRedisTemplate redisTemplate;
 
     @Override
+    /**
+     * 发送邮件验证码
+     * @param user
+     * @param session
+     * @return
+     */
     public Boolean sendMsg(User user) {
         //  获取邮箱账号
         String phone = user.getPhone();
@@ -63,6 +69,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return false;
     }
 
+    /**
+     * 用户登录
+     * @param map
+     * @return
+     */
     public User login(Map map) {
         //获取phone
         String phone = map.get("phone").toString();
